@@ -10,8 +10,14 @@ public class RegistrationServlet extends HttpServlet {
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
 
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
         if (!password.equals(confirmPassword)) {
-            response.sendRedirect("register.html?error=nomatch");
+            out.println("<html><body>");
+            out.println("<p>Passwords do not match. Please try again.</p>");
+            out.println("<a href=\"register.html\">Back to Registration</a>");
+            out.println("</body></html>");
             return;
         }
 
@@ -24,7 +30,10 @@ public class RegistrationServlet extends HttpServlet {
             ResultSet rs = psCheck.executeQuery();
 
             if (rs.next()) {
-                response.sendRedirect("register.html?error=userexists");
+                out.println("<html><body>");
+                out.println("<p>User already exists. Please try another username.</p>");
+                out.println("<a href=\"register.html\">Back to Registration</a>");
+                out.println("</body></html>");
             } else {
                 PreparedStatement psInsert = con.prepareStatement("INSERT INTO users (username, password, loyalty_points) VALUES (?, ?, ?)");
                 psInsert.setString(1, username);
@@ -35,13 +44,17 @@ public class RegistrationServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("username", username);
                 session.setAttribute("loyalty_points", 100);
-
                 response.sendRedirect("points.html");
             }
 
             con.close();
         } catch (Exception e) {
-            response.sendRedirect("register.html?error=exception");
+            out.println("<html><body>");
+            out.println("<p>Error: " + e.getMessage() + "</p>");
+            out.println("<a href=\"register.html\">Back to Registration</a>");
+            out.println("</body></html>");
+        } finally {
+            out.close();
         }
     }
 }

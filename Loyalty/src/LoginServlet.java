@@ -9,6 +9,9 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
         try {
             Connection con = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/loyalty_card_app?serverTimezone=UTC", "root", "root");
@@ -24,15 +27,22 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("username", username);
                 int points = rs.getInt("loyalty_points");
                 session.setAttribute("loyalty_points", points);
-
                 response.sendRedirect("points.html");
             } else {
-                response.sendRedirect("login.html?error=invalid");
+                out.println("<html><body>");
+                out.println("<p>Username or password is incorrect. Please try again.</p>");
+                out.println("<a href=\"login.html\">Back to Login</a>");
+                out.println("</body></html>");
             }
 
             con.close();
         } catch (Exception e) {
-            response.sendRedirect("login.html?error=exception");
+            out.println("<html><body>");
+            out.println("<p>Error: " + e.getMessage() + "</p>");
+            out.println("<a href=\"login.html\">Back to Login</a>");
+            out.println("</body></html>");
+        } finally {
+            out.close();
         }
     }
 }
