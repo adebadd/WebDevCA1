@@ -1,0 +1,62 @@
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.sql.*;
+
+public class RegistrationServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmPassword");
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        // Check if passwords match
+        if (!password.equals(confirmPassword)) {
+            out.println("<p>Passwords do not match. Please try again.</p>");
+            return;
+        }
+
+        // Database connection and operations
+        try {
+            // Note: You should retrieve these from configuration files or environment variables
+            String url = "jdbc:mysql://localhost:3306/loyalty_card_app";
+            String dbUser = "root";
+            String dbPassword = "password";
+
+            // Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Connect to the database
+            Connection con = DriverManager.getConnection(url, dbUser, dbPassword);
+
+            // Check if the user already exists
+            PreparedStatement psCheck = con.prepareStatement("SELECT * FROM users WHERE username = ?");
+            psCheck.setString(1, username);
+            ResultSet rs = psCheck.executeQuery();
+            
+            if (rs.next()) {
+                out.println("<p>User already exists. Please try another username.</p>");
+            } else {
+                // Insert the new user
+                PreparedStatement psInsert = con.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?)");
+                psInsert.setString(1, username);
+                psInsert.setString(2, password);
+                psInsert.executeUpdate();
+
+                out.println("<p>Registration successful. You have been awarded 100 loyalty points.</p>");
+            }
+
+            con.close();
+        } catch (Exception e) {
+            out.println("<p>Error: " + e.getMessage() + "</p>");
+            e.printStackTrace();
+        } finally {
+            out.close();
+        }
+    }
+}

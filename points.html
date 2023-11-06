@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Points</title>
+</head>
+<body>
+    <h2>Manage Your Points</h2>
+    <form action="points" method="post">
+        <label for="points">Points:</label>
+        <input type="number" id="points" name="points" required><br><br>
+        
+        <input type="radio" id="add" name="operation" value="add" checked>
+        <label for="add">Add</label><br>
+        
+        <input type="radio" id="subtract" name="operation" value="subtract">
+        <label for="subtract">Subtract</label><br><br>
+        
+        <input type="submit" value="Update Points">
+    </form>
+</body>
+</html>
