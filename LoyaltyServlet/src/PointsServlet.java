@@ -33,7 +33,10 @@ public class PointsServlet extends HttpServlet {
                 int newPoints = "add".equals(operation) ? currentPoints + pointsToUpdate : currentPoints - pointsToUpdate;
                 
                 if (newPoints < 0) {
+                    out.println("<html><body>");
                     out.println("You cannot have a negative balance.");
+                    out.println("<br/><a href='points.html'>Go back</a>");
+                    out.println("</body></html>");
                     return;
                 }
                 
@@ -43,14 +46,23 @@ public class PointsServlet extends HttpServlet {
                 psUpdate.executeUpdate();
                 session.setAttribute("loyalty_points", newPoints);
 
+                out.println("<html><body>");
                 out.println("Your loyalty points have been updated. Your new balance is: " + newPoints);
+                out.println("<br/><a href='points.html'>Go back</a>");
+                out.println("</body></html>");
             } else {
+                out.println("<html><body>");
                 out.println("User not found.");
+                out.println("<br/><a href='points.html'>Go back</a>");
+                out.println("</body></html>");
             }
             
             con.close();
         } catch (Exception e) {
+            out.println("<html><body>");
             out.println("Error: " + e.getMessage());
+            out.println("<br/><a href='points.html'>Go back</a>");
+            out.println("</body></html>");
             e.printStackTrace();
         } finally {
             out.close();
